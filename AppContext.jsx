@@ -6,15 +6,12 @@ const AppContext = createContext();
 export const useAppContext = () => useContext(AppContext);
 
 export const AppProvider = ({ children }) => {
-    const [user, setUser] = useState('');
-    // const [lastName,setLastName] = useState('');
-    // const [email, setEmail] = useState('');
-    // const [day, setDay] = useState('');
-    
-    const value = {
-        user,
-        setUser  
-    };
+  const [token, setToken] = useState('');
 
-    return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  const value = {
+    token,
+    setToken,
+  };
+
+  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

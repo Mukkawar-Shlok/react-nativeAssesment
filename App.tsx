@@ -2,8 +2,7 @@ import * as React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Toast from 'react-native-toast-message';
-import { AppProvider } from './AppContext';
-
+import { AppProvider, useAppContext } from './AppContext';
 
 import HomeScreen from './screen/HomeScreen';
 import ProfileScreen from './screen/ProfileScreen';
@@ -26,30 +25,31 @@ function EditTabStack(){
 
 function AllTab(){
   return(
-    <Tab.Navigator>
-        <Tab.Screen name="Login" component={LoginScreen} />
-        <Tab.Screen name="Profile" component={EditTabStack} />
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+        <Tab.Screen name="List" component={HomeScreen}  />
+        <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
   )
 }
 
 const App = () => {
+  const { token } = useAppContext(); // Ensure this context is provided correctly
+
   return (
     <>
-    <AppProvider>
-    <NavigationContainer>
-    <Stack.Navigator>
-        <Stack.Screen name="Login" component={LoginScreen} />
-        {/* <Stack.Screen name="AllTab" component={AllTab} /> */}
-      
-      </Stack.Navigator>
-    </NavigationContainer>
-    </AppProvider>
-    <Toast />
-
+      <NavigationContainer>
+        <Stack.Navigator>
+          {true ? (
+            <Stack.Screen name="eConceptual" component={AllTab} />
+          ) : (
+            <Stack.Screen name="Login" component={LoginScreen} />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+      <Toast />
     </>
-    
-  );
+  
+    );
 };
 
 export default App;

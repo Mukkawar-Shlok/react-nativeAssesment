@@ -1,7 +1,7 @@
 import { Button, Text } from 'react-native';
 const HomeScreen = ({navigation}) => {
     return (
-      <Text>Home</Text>
+      <Text>Products</Text>
     );
   };
 export default HomeScreen;
