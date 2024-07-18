@@ -39,7 +39,7 @@ const App = () => {
     <>
       <NavigationContainer>
         <Stack.Navigator>
-          {true ? (
+          {token ? (
             <Stack.Screen name="eConceptual" component={AllTab} />
           ) : (
             <Stack.Screen name="Login" component={LoginScreen} />
