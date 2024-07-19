@@ -51,7 +51,7 @@ const ReadProfile = ({ profile }) => {
                     editable={false}
                 />
                 <TouchableOpacity style={styles.updateButton} onPress={() => setUpdateMode(true)}>
-                    <Text style={styles.updateButtonText}>Update</Text>
+                    <Text style={styles.updateButtonText}>Edit Profile</Text>
                 </TouchableOpacity>
             </View>
         </View>

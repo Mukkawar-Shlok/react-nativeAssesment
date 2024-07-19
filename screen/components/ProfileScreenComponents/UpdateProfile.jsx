@@ -1,9 +1,58 @@
 import { View, Text, Button, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useAppContext } from '../../../AppContext';
+import Toast from 'react-native-toast-message';
+import config from "../../../config";
 
 const UpdateProfile = ({profile}) => {
-    const{setUpdateMode} = useAppContext();
+    const{setUpdateMode,token,profileUpdated,setProfileUpdated} = useAppContext();
+    const [seeLoad,setSeeLoad] = useState(false);
+    const [name,setName] = useState(profile.name);
+    const [email,setEmail] = useState(profile.email);
+    const [city,setCity] = useState(profile.city);
+    const [country,setCountry] = useState(profile.country);
+    const [pincode,setPincode] = useState(String(profile.pincode));
+    async function updateProfile(){
+        try{
+            let url = config.BASE_URL + "api/profile";
+            let response = await fetch(url,
+                {
+                    method:"POST",
+                    headers:{
+                        'Content-Type':"application/json",
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body:JSON.stringify({
+                        email:email,
+                        name:name,
+                        pincode:pincode,
+                        country:country,
+                        city:city
+                    })
+                }
+            )
+            if(!response.ok){
+                Toast.show({
+                    type: 'error',
+                    text1: "Network response was not ok."
+                  }); 
+            }
+            response =await response.json();
+            console.log(response)
+            setProfileUpdated(!profileUpdated)
+            Toast.show({
+                type: 'success',
+                text1: "Profile Updated Sucessfully."
+              });
+            setUpdateMode(false);
+        }catch(error){
+            console.log(error);
+            Toast.show({
+              type: 'error',
+              text1: error.message
+            });
+        }
+    } 
     console.log(profile)
     return (
         <ScrollView>
@@ -21,35 +70,35 @@ const UpdateProfile = ({profile}) => {
                 <TextInput
                     style={styles.input}
                     placeholder='Name'
-                    value={profile.name}
-                
+                    value={name}
+                    onChangeText={(text)=>setName(text)}
                     
                 />
                 <TextInput
                     style={styles.input}
                     placeholder='Email'
-                    value={profile.email}
-                    
+                    value={email}
+                    onChangeText={(text)=>setEmail(text)}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder='City'
-                    value={profile.city}
-                    
+                    value={city}
+                    onChangeText={(text)=>setCity(text)}
                 />
                 <TextInput
                     style={styles.input}
                     placeholder='Country'
-                    value={profile.country}
-                    
+                    value={country}
+                    onChangeText={(text)=>setCountry(text)} 
                 />
                 <TextInput
                     style={styles.input}
                     placeholder='Pincode'
-                    value={String(profile.pincode)}
-                    
+                    value={String(pincode)}
+                    onChangeText={(text)=>setPincode(text)} 
                 />
-                <TouchableOpacity style={styles.updateButton} onPress={() => setUpdateMode(true)}>
+                <TouchableOpacity style={styles.updateButton} onPress={() => updateProfile()}>
                     <Text style={styles.updateButtonText}>Update</Text>
                 </TouchableOpacity>
             </View>

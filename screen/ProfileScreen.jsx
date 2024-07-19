@@ -4,9 +4,10 @@ import config from "../config";
 import { useAppContext } from '../AppContext';
 import UpdateProfile from './components/ProfileScreenComponents/UpdateProfile';
 import ReadProfile from './components/ProfileScreenComponents/ReadProfile';
+import Toast from 'react-native-toast-message';
 
 const ProfileScreen = ({ navigation, route }) => {
-    const { token,updateMode } = useAppContext();
+    const { token,updateMode,profileUpdated } = useAppContext();
     const [profile, setProfile] = useState(null);
 
     useEffect(() => {
@@ -21,16 +22,23 @@ const ProfileScreen = ({ navigation, route }) => {
                     },
                 });
                 if (!response.ok) {
-                    throw new Error('Network response was not ok.');
+                    Toast.show({
+                        type: 'error',
+                        text1: "Network response was not ok."
+                      });  
                 }
                 const data = await response.json();
                 setProfile(data);
             } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: error.message
+                  });
                 console.error('Error fetching data:', error);
             }
         }
         fetchData();
-    }, [token]);
+    }, [token,profileUpdated]);
 
     return (
         <>
