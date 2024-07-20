@@ -1,22 +1,85 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, Image, TextInput, TouchableOpacity } from 'react-native';
 import { useAppContext } from '../../../AppContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
+import defaultImage from "../../../public/static/images/default.webp";
+import config from '../../../config'; 
 
-const ReadProfile = ({ profile }) => {
-    const { setUpdateMode } = useAppContext();
+const ReadProfile = () => {
+    const { setUpdateMode, setToken, token } = useAppContext();
+    const [profile, setProfile] = useState(null);
+    
+    useEffect(() => {
+        async function fetchData() {
+            const url = config.BASE_URL + "api/profile";
+            try {
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    Toast.show({
+                        type: 'error',
+                        text1: "Network response was not ok."
+                    });  
+                }
+                const data = await response.json();
+                setProfile(data);
+                await AsyncStorage.setItem("userProfile",JSON.stringify(data));
+                console.log(data);
+            } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: error.message
+                });
+                console.error('Error fetching data:', error);
+            }
+        }
+        fetchData();
+    }, [token]);
+
+    async function LogOut() {    
+        try {
+            setToken("");
+            await AsyncStorage.removeItem("userToken");
+            await AsyncStorage.removeItem("userProfile");
+            Toast.show({
+                type: 'success',
+                text1: "Successfully Logged Out."
+            });
+        } catch (error) {
+            console.log(error);
+            Toast.show({
+                type: 'error',
+                text1: error.message
+            });
+        }
+    }
+
     if (!profile) {
-        return <Text style={styles.loadingText}>Loading profile...</Text>;
-        console.log(profile);
+        return (
+            <View style={styles.loadingContainer}>
+                <Text style={styles.loadingText}>Loading profile...</Text>
+            </View>
+        );
     }
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
                 <Text style={styles.headerText}>Profile</Text>
+                <Button
+                    title="Log Out"
+                    onPress={LogOut}
+                />
             </View>
             <View style={styles.profileContainer}>
                 <Image
-                    source={{ uri: 'https://via.placeholder.com/150' }} 
+                    source={defaultImage} 
                     style={styles.profileImage}
                 />
                 <Text style={styles.changePictureText}>Change Picture</Text>
@@ -92,8 +155,8 @@ const styles = StyleSheet.create({
     input: {
         width: '90%',
         height: 40,
-        fontWeight:'800',
-        fontSize:15,
+        fontWeight: '800',
+        fontSize: 15,
         borderColor: '#ccc',
         borderWidth: 1,
         borderRadius: 5,
@@ -115,10 +178,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    loadingText: {
+    loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+    },
+    loadingText: {
         fontSize: 18,
         color: '#999',
     },

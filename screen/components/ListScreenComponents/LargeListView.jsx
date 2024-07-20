@@ -1,10 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import defaultImageSource from "../../../public/static/images/defaultProduct.jpg"
 
 export default function GridListView({ data }) {
+  const [imageSource, setImageSource] = useState({ uri: data.imageUrl });
+
+  const handleImageError = () => {
+    setImageSource(defaultImageSource);
+  };
+
   return (
     <View style={styles.gridItem}>
-      <Image source={{ uri: data.imageUrl }} style={styles.gridImage} />
+      <Image 
+        source={imageSource} 
+        style={styles.gridImage}
+        onError={handleImageError} 
+      />
       <View style={styles.gridInfo}>
         <Text style={styles.gridName}>{data.name}</Text>
         <Text style={styles.gridDescription}>{data.description}</Text>

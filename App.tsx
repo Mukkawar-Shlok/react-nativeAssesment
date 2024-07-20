@@ -1,28 +1,32 @@
 import * as React from 'react';
+import {useState,useEffect} from 'react';
+
+//navigation imports
 import {NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+//toast for showing toast mesages
 import Toast from 'react-native-toast-message';
-import { AppProvider, useAppContext } from './AppContext';
+
+//context
+import { useAppContext } from './AppContext';
+
+//icon
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 import { faHome,faUser } from '@fortawesome/free-solid-svg-icons'
+
+//screens
 import HomeScreen from './screen/HomeScreen';
 import ProfileScreen from './screen/ProfileScreen';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import EditScreen from './screen/EditScreen';
-import UpdateScreen from './screen/UpdateScreen';
 import LoginScreen from './screen/LoginScreen';
+
+//async storage
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+//creating bottom tabs
 const Tab = createBottomTabNavigator();
-const Stack = createNativeStackNavigator();
-
-function EditTabStack(){
-  return (
-    <Stack.Navigator>
-      <Stack.Screen name="Edit" component={EditScreen} />
-      <Stack.Screen name="Update" component={UpdateScreen} />
-    </Stack.Navigator>
-  );
-}
-
 function AllTab() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
@@ -43,15 +47,48 @@ function AllTab() {
             <FontAwesomeIcon icon={faUser} />
           ),
         }}
-      />
+        />
     </Tab.Navigator>
   );
 }
 
+//for creating stacks
+const Stack = createNativeStackNavigator();
+//We have two stacks
+//1.which contains login page which can further contains pages that does not require auth like signup,privacy policy,terms and condition etc
+//2.all the screens that require auth.
 
 const App = () => {
-  const { token } = useAppContext(); // Ensure this context is provided correctly
+  const { token,setToken } = useAppContext();
+  const [isLoading, setIsLoading] = useState(true);
 
+  //Loading and checking if user is already logged in and have token saved inside localstorage
+  useEffect(() => {
+    const getToken = async () => {
+      setIsLoading(true);
+      try {
+        //getting token from local storage
+        const storedToken = await AsyncStorage.getItem('userToken');
+        //if storedToken is not null
+        if (storedToken !== null) {
+          //parsing the token
+          const parsedToken = JSON.parse(storedToken);
+          //setting tokens value in context using localstorage
+          setToken(parsedToken);
+          //loading false as token has been found and set
+          setIsLoading(false);
+        }else{
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Failed to get token from AsyncStorage:', error);
+        setIsLoading(false);
+      }
+    };
+    getToken();
+  }, []);
+
+  //loading stack based upon token
   return (
     <>
       <NavigationContainer>
@@ -59,6 +96,7 @@ const App = () => {
           {token ? (
             <Stack.Screen name="eConceptual" component={AllTab} />
           ) : (
+          
             <Stack.Screen name="Login" component={LoginScreen} />
           )}
         </Stack.Navigator>

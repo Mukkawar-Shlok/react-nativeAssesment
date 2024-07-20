@@ -1,55 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, StyleSheet, Button } from 'react-native';
+
+//config for base url
 import config from "../config";
+
+//for loading context
 import { useAppContext } from '../AppContext';
+
+//components for read mode profile and update mode profile
 import UpdateProfile from './components/ProfileScreenComponents/UpdateProfile';
 import ReadProfile from './components/ProfileScreenComponents/ReadProfile';
+
+//for showing toast message
 import Toast from 'react-native-toast-message';
 
 const ProfileScreen = ({ navigation, route }) => {
     const { token,updateMode,profileUpdated } = useAppContext();
-    const [profile, setProfile] = useState(null);
-
-    useEffect(() => {
-        async function fetchData() {
-            const url = config.BASE_URL + "api/profile";
-            try {
-                const response = await fetch(url, {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
-                if (!response.ok) {
-                    Toast.show({
-                        type: 'error',
-                        text1: "Network response was not ok."
-                      });  
-                }
-                const data = await response.json();
-                setProfile(data);
-            } catch (error) {
-                Toast.show({
-                    type: 'error',
-                    text1: error.message
-                  });
-                console.error('Error fetching data:', error);
-            }
-        }
-        fetchData();
-    }, [token,profileUpdated]);
-
+    //in case update mode is turned on update mode profile component will get loaded
+    //else read profile will be loaded
     return (
         <>
         {updateMode ? (
             <>
-            <UpdateProfile profile={profile} />
+            <UpdateProfile  />
             </>
             
         ):
         (
-            <ReadProfile profile={profile}/>
+            <ReadProfile />
         )}
         </>
     );

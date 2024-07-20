@@ -1,16 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
+import defaultImageSource from "../../../public/static/images/defaultProduct.jpg"
 
 export default function SmallListView({ data }) {
-//   const [loading, setLoading] = useState(true);
+  const [imageSource, setImageSource] = useState({ uri: data.imageUrl });
 
+  const handleImageError = () => {
+    setImageSource(defaultImageSource);
+  };
+  
 
   return (
     <View style={styles.container}>
 
         <Image
-          source={{ uri: data.imageUrl }}
+          source={imageSource}
           style={styles.image}
+          onError={handleImageError}
+          
         />
 
       <View style={styles.infoContainer}>
