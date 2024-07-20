@@ -2,79 +2,75 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
 
 # Getting Started
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Prerequisite for running this project
+- Java (java 18.0.2.1 2022-08-18)
+- Chocolaty (V2.2.2)
+- NodeJs (v18.17.1)
+- Android Studio
+- Adb
+- ANDROID_HOME - Environment variable that points to your Android SDK installation
+- Android SDK
+- React-Native (0.74.3)
 
-## Step 1: Start the Metro Server
+**Note** First run ```bash npx react-native doctor``` after installing everything if you are missing something this command will run dignostic tell what are you missing and probably fix the issue!.
+![image](https://github.com/user-attachments/assets/aeabd87e-9233-448d-b6a3-54631c16eb31)
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## Installation.
 
-To start Metro, run the following command from the _root_ of your React Native project:
+- After getting green check from doctor run npm install, on mac os pod install. (This will download project dependencies).
+- Now if you encounter issues with npm packages while installing please check nodeJs and Java versions.
+- After Sucessfull installation run ```bash npx react-native start``` this will start metro bundler.
+- metro bundler is issential for running react-native apps this will show something like this.
+  ![image](https://github.com/user-attachments/assets/1a9a1558-3f29-4778-abac-9480ebc4a04f)
+- Now press **a** for running on android.
+  ![image](https://github.com/user-attachments/assets/f69f788e-3836-4ebe-b5cd-703775d80e0d)
+- If you already have a simulator in android studio all good. If not set up one.
+- I am running this project on api version 34 of the device.
+- Now your app will start running on the device
 
-```bash
-# using npm
-npm start
+- Now if you want to run the app on external device.
+- Connect phone with pc with usb and turn on developer mode.
+- Run ```bash adb devices``` this will show you connected devices.
+- Then you can connect with that device ```bash adb connect ipAdressOfPhone:5555```.
 
-# OR using Yarn
-yarn start
-```
+##  Summary of Architectural Decisions
+1. Application Structure
 
-## Step 2: Start your Application
+   1.1 Authentication Stack vs. Unauthorized Stack
+   - Unauthorized Stack: Handles screens accessible without authentication, such as Login could be Signup, Privacy Policy, and Terms & Conditions.
+   - Authenticated Stack: Handles screens accessible only after authentication, including user profile and list items.
+   1.2 Bottom Tabs in Authenticated Stack
+   - User List Items Tab: Displays user-related lists with two distinct views.
+   - Profile Tab: Handles user profile display and updating.
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
+2. Context Provider for Token Management
 
-### For Android
+   2.1 Context Setup
+   - App Provider: Wraps the entire app to manage authentication state via context.
+   - Token Handling: Checks for a token in local storage to set context value. This ensures authenticated pages are accessible only when a valid token is present.
+   2.2 Benefits
+   - Centralized Token Management: Avoids repetitive access to local storage for token validation.
+   - Efficient Authentication Flow: Simplifies authentication checks and management throughout the app.
 
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### For iOS
-
-```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
-```
-
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
-
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
-
-## Step 3: Modifying your App
-
-Now that you have successfully run the app, let's modify it.
-
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
-
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
-# react-nativeAssesment
+3. Profile Component Structure
+   3.1 Components
+   - Profile Display Component: Shows user profile information.
+   - Profile Update Component: Allows the user to update their profile information.
+   3.2 Separation of Concerns
+   - Modular Design: Separates profile viewing and updating responsibilities into distinct components for better maintainability.
+  
+4. List Items Component Structure
+  4.1 Components
+   - List View Components: Two separate components for displaying lists in different views.
+   - Styling: Each component has its own styling to ensure visual consistency and separation of concerns.
+  4.2 Benefits and Trade-offs
+   - Efficiency: Allows for different implementations and optimizations for each list view.
+   - DRY Principle Considerations: While separation improves maintainability, it might introduce code duplication.
+  
+## Additional Tools and Dependencies
+- AsyncStorage for local storage capability.You can read docs of async storage [here](https://reactnative.dev/docs/asyncstorage).
+- @react-navigation/bottom-tabs for bottom stack in react native. [docs](https://reactnavigation.org/docs/bottom-tab-navigator/).
+- @react-native-dropdown-select-list for dropdown list inside scrollview. [npm package](https://www.npmjs.com/package/react-native-dropdown-select-list).
+- @react-native-toast-message for showing toast messages.[npm package](https://www.npmjs.com/package/react-native-toast-message).
+- @react-native-vector-icons for icons.[npm package](https://www.npmjs.com/package/react-native-vector-icons).
+- validator for validating emails.[npm package](https://www.npmjs.com/package/validator).
