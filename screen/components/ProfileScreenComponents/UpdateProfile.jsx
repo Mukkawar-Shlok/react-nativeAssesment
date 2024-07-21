@@ -1,21 +1,50 @@
-import { View, Text, Button, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView } from 'react-native';
+import { 
+    View,
+    Text,
+    Button,
+    StyleSheet,
+    Image,
+    TextInput,
+    TouchableOpacity,
+    ScrollView,
+    ActivityIndicator
+} from 'react-native';
+
 import React, { useEffect, useState } from 'react';
+
+//context
 import { useAppContext } from '../../../AppContext';
+
+//showing toast message
 import Toast from 'react-native-toast-message';
+
+//for getting base url of api
 import config from "../../../config";
+
+//async storage for getting profile saved inside local storagw
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+//for validating email
 import validator from 'validator';
+
+//dropdown for country
 import {SelectList} from 'react-native-dropdown-select-list';
 
+//dafault image for profile
+import defaultImage from "../../../public/static/images/default.webp";
 const UpdateProfile = () => {
     const { setUpdateMode, token, profileUpdated, setProfileUpdated } = useAppContext();
+    
+    //profile states
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [city, setCity] = useState('');
     const [country, setCountry] = useState('');
     const [pincode, setPincode] = useState('');
     
-    const [selected, setSelectedList] = useState("")
+    //for showing loading state
+    const [load,setLoad] = useState(false);
+    
     const data = [
         { key: 'China', value: 'China' },
         { key: 'Nepal', value: 'Nepal' },
@@ -24,6 +53,7 @@ const UpdateProfile = () => {
         { key: 'Bangladesh', value: 'Bangladesh' }
     ];
 
+    //function for fetching profile from localstorage
     useEffect(() => {
         const fetchProfileData = async () => {
             let profileData = await AsyncStorage.getItem("userProfile");
@@ -40,25 +70,33 @@ const UpdateProfile = () => {
         fetchProfileData();
     }, []);
 
+    //function for updating profile
     const updateProfile = async () => {
         try {
-            if(name.length <= 0){
+            setLoad(true);
+            //valiadtions
+            if( name.length <= 0 ){
                 Toast.show({ type: 'error', text1: 'Please fill valid name.' });
                 return;
             }
-            if (!validator.isEmail(email)) {
+
+            if ( !validator.isEmail( email ) ) {
                 Toast.show({ type: 'error', text1: 'Please fill valid email.' });
                 return;
             }
-            if(city.length <= 0){
+
+            if( city.length <= 0 ){
                 Toast.show({ type: 'error', text1: 'Please fill valid city.' });
                 return;
             }
-            if(pincode.length < 6){
+
+            if( pincode.length < 6 ){
                 Toast.show({ type: 'error', text1: 'Please fill valid pincode.' });
                 return;
             }
+
             let url = `${config.BASE_URL}api/profile`;
+            
             let response = await fetch(url, {
                 method: "POST",
                 headers: {
@@ -67,36 +105,56 @@ const UpdateProfile = () => {
                 },
                 body: JSON.stringify({ email, name, pincode, country, city })
             });
-            if (!response.ok) {
+            if ( !response.ok ) {
                 Toast.show({ type: 'error', text1: "Network response was not ok." });
                 return;
             }
             response = await response.json();
-            await AsyncStorage.setItem("userProfile", JSON.stringify(response));
-            setProfileUpdated(!profileUpdated);
+            //setting updated data inside localstorage
+            await AsyncStorage.setItem( "userProfile" , JSON.stringify(response) );
+            setProfileUpdated( !profileUpdated );
+            //showing success message to user
             Toast.show({ type: 'success', text1: "Profile Updated Successfully." });
-            setUpdateMode(false);
-        } catch (error) {
-            console.log(error);
+            setUpdateMode( false );
+        } catch ( error ) {
+            console.log( error );
             Toast.show({ type: 'error', text1: error.message });
+        }finally{
+            setLoad( false );
         }
     };
 
     return (
+        <>
+        {
+            //loading
+            load ? (
+                <View style={ [ styles.actContainer, styles.horizontal ] }>
+                    <ActivityIndicator size="large" color="#00ff00" />
+                </View>
+            ) : (
+            //profile has been loaded
         <ScrollView>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Text style={styles.headerText}>Update Profile</Text>
-                    <Button title='Go Back' onPress={() => setUpdateMode(false)} />
+            <View style={ styles.container }>
+                <View style={ styles.header }>
+                    
+                    <Text style={ styles.headerText }> Update Profile </Text>
+                    
+                    <Button title='Go Back' onPress={() => setUpdateMode( false )} />
+                
                 </View>
                 <View style={styles.profileContainer}>
-                    <Image source={{ uri: 'https://via.placeholder.com/150' }} style={styles.profileImage} />
+                
+                    <Image source={defaultImage}  style={styles.profileImage} />
+                
                     <Text style={styles.changePictureText}>Change Picture</Text>
+                
                     <TextInput style={styles.input} placeholder='Name' value={name} onChangeText={(text) => setName(text)} />
                     <TextInput style={styles.input} placeholder='Email' value={email} onChangeText={(text) => setEmail(text)} />
                     <TextInput style={styles.input} placeholder='City' value={city} onChangeText={(text) => setCity(text)} />
                     {/* <TextInput style={styles.input} placeholder='Country' value={country} onChangeText={(text) => setCountry(text)} /> */}
                     <TextInput style={styles.input} placeholder='Pincode' value={pincode} onChangeText={(text) => setPincode(text)} />
+                
                     <SelectList 
                     data={data} 
                     setSelected={setCountry} 
@@ -104,20 +162,34 @@ const UpdateProfile = () => {
                     placeholder={country}
                     // selected={country}
                     />                   
+                
                     <TouchableOpacity style={styles.updateButton} onPress={updateProfile}>
                         <Text style={styles.updateButtonText}>Update</Text>
                     </TouchableOpacity>
+                
                 </View>
             </View>
-             </ScrollView>
+        </ScrollView>
+            )
+        }
+        </>
+        
     );
 };
-
+//styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f5f5f5',
-    },
+    },actContainer: {
+        flex: 1,
+        justifyContent: 'center',
+      },
+      horizontal: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10,
+      },
     header: {
         backgroundColor: '#fa7268',
         padding: 15,

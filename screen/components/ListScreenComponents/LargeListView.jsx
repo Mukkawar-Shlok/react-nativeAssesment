@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { 
+  View,
+  Text,
+  Image,
+  StyleSheet
+} from 'react-native';
+
+//default image 
 import defaultImageSource from "../../../public/static/images/defaultProduct.jpg"
 
 export default function GridListView({ data }) {
+  //image source state
   const [imageSource, setImageSource] = useState({ uri: data.imageUrl });
 
+  //handeling error while loading image
   const handleImageError = () => {
+    //changing source
     setImageSource(defaultImageSource);
   };
 
@@ -25,6 +35,7 @@ export default function GridListView({ data }) {
   );
 }
 
+//styles
 const styles = StyleSheet.create({
   gridItem: {
     flex: 1,

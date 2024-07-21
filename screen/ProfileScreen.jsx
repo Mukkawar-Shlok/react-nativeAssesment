@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, StyleSheet, Button } from 'react-native';
+import { 
+    View,
+    Text,
+    Image,
+    StyleSheet,
+    Button
+} from 'react-native';
 
 //config for base url
 import config from "../config";
@@ -21,12 +27,14 @@ const ProfileScreen = ({ navigation, route }) => {
     return (
         <>
         {updateMode ? (
+            //update mode is on
             <>
             <UpdateProfile  />
             </>
             
         ):
         (
+            //update mode is off
             <ReadProfile />
         )}
         </>

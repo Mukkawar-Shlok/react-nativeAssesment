@@ -23,6 +23,8 @@ import LoginScreen from './screen/LoginScreen';
 
 //async storage
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ActivityIndicator, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 
 
 //creating bottom tabs
@@ -75,13 +77,10 @@ const App = () => {
           const parsedToken = JSON.parse(storedToken);
           //setting tokens value in context using localstorage
           setToken(parsedToken);
-          //loading false as token has been found and set
-          setIsLoading(false);
-        }else{
-          setIsLoading(false);
         }
       } catch (error) {
         console.error('Failed to get token from AsyncStorage:', error);
+      }finally{
         setIsLoading(false);
       }
     };
@@ -91,7 +90,15 @@ const App = () => {
   //loading stack based upon token
   return (
     <>
-      <NavigationContainer>
+    {
+      isLoading ? (
+        <View style={[styles.container, styles.horizontal]}>
+          <ActivityIndicator size="large" color="#00ff00" />
+        </View>
+      ):
+      (
+        <>
+        <NavigationContainer>
         <Stack.Navigator>
           {token ? (
             <Stack.Screen name="eConceptual" component={AllTab} />
@@ -102,9 +109,24 @@ const App = () => {
         </Stack.Navigator>
       </NavigationContainer>
       <Toast />
+      </>
+      )
+    }
+      
     </>
   
     );
 };
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  horizontal: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    padding: 10,
+  },
+});
 
 export default App;

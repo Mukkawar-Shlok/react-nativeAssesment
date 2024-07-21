@@ -1,18 +1,44 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, Image, TextInput, TouchableOpacity } from 'react-native';
+import { 
+    View,
+    Text,
+    StyleSheet,
+    Button,
+    Image,
+    TextInput,
+    TouchableOpacity,
+    ActivityIndicator
+} from 'react-native';
+
+//context
 import { useAppContext } from '../../../AppContext';
+
+//async storage for storing profile after it gets fetched
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+//for showing text messages
 import Toast from 'react-native-toast-message';
+
+//static image for profile
 import defaultImage from "../../../public/static/images/default.webp";
+
+//config for base url of api
 import config from '../../../config'; 
 
 const ReadProfile = () => {
     const { setUpdateMode, setToken, token } = useAppContext();
-    const [profile, setProfile] = useState(null);
+
+    //profile state
+    const [profile, setProfile] = useState({});
+    //loading state
+    const [load,setLoad] = useState(false);
     
+    //fetching profile
     useEffect(() => {
         async function fetchData() {
+
             const url = config.BASE_URL + "api/profile";
+            setLoad(true);
             try {
                 const response = await fetch(url, {
                     method: "GET",
@@ -37,15 +63,20 @@ const ReadProfile = () => {
                     text1: error.message
                 });
                 console.error('Error fetching data:', error);
+            }finally{
+                setLoad(false);
             }
         }
         fetchData();
     }, [token]);
 
+    //logout function
     async function LogOut() {    
         try {
+            //removing token from local storage and context
             setToken("");
             await AsyncStorage.removeItem("userToken");
+            //removing profile from local storage
             await AsyncStorage.removeItem("userProfile");
             Toast.show({
                 type: 'success',
@@ -60,29 +91,37 @@ const ReadProfile = () => {
         }
     }
 
-    if (!profile) {
-        return (
-            <View style={styles.loadingContainer}>
-                <Text style={styles.loadingText}>Loading profile...</Text>
-            </View>
-        );
-    }
+
 
     return (
+        <>
+        {load ? (
+            //loading
+        <View style={[styles.actContainer, styles.horizontal]}>
+            <ActivityIndicator size="large" color="#00ff00" />
+        </View>
+        ) : (
+            // loaded
         <View style={styles.container}>
             <View style={styles.header}>
+            
                 <Text style={styles.headerText}>Profile</Text>
+                {/* log out button */}
                 <Button
                     title="Log Out"
                     onPress={LogOut}
                 />
+            
             </View>
             <View style={styles.profileContainer}>
+
                 <Image
                     source={defaultImage} 
                     style={styles.profileImage}
                 />
+
                 <Text style={styles.changePictureText}>Change Picture</Text>
+                
                 <TextInput
                     style={styles.input}
                     placeholder='Name'
@@ -113,19 +152,34 @@ const ReadProfile = () => {
                     value={String(profile.pincode)}
                     editable={false}
                 />
+                {/* edit profile */}
                 <TouchableOpacity style={styles.updateButton} onPress={() => setUpdateMode(true)}>
                     <Text style={styles.updateButtonText}>Edit Profile</Text>
                 </TouchableOpacity>
+
             </View>
         </View>
+        )}
+        </>
+        
     );
 };
 
+//styles
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#f5f5f5',
     },
+    actContainer: {
+        flex: 1,
+        justifyContent: 'center',
+      },
+      horizontal: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        padding: 10,
+      },
     header: {
         backgroundColor: '#fa7268',
         padding: 15,

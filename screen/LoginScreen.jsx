@@ -40,7 +40,7 @@ const LoginScreen = () => {
           text1: 'Please fill valid email.',
         });
 
-        setSeeLoad(false);
+        // setSeeLoad(false);
       } else if (password.length <= 8) {
         //validaing password
         Toast.show({
@@ -48,7 +48,7 @@ const LoginScreen = () => {
           text1: 'Please fill valid password.',
         });
 
-        setSeeLoad(false);
+        // setSeeLoad(false);
       } else {
         //email and password are validated make a request to url
         const url = config.BASE_URL + 'api/login';
@@ -82,7 +82,7 @@ const LoginScreen = () => {
             text1: 'Successfully Logged In.',
           });
           
-          setSeeLoad(false);
+          // setSeeLoad(false);
         
         } else {
         
@@ -91,7 +91,7 @@ const LoginScreen = () => {
             text1: response.message,
           });
         
-          setSeeLoad(false);
+          // setSeeLoad(false);
         }
       }
     } catch (error) {
@@ -102,6 +102,7 @@ const LoginScreen = () => {
         text1: error.message,
       });
       
+    }finally{
       setSeeLoad(false);
     }
   }
@@ -151,7 +152,7 @@ const LoginScreen = () => {
 
       <TouchableOpacity>
         <Text style={styles.registerText}>
-          Don’t have an account?{' '}
+          Don’t have an account?
           <Text style={styles.registerNow}>Register Now</Text>
         </Text>
       </TouchableOpacity>

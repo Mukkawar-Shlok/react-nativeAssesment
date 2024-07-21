@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { 
+  View,
+  Text,
+  Image,
+  StyleSheet
+} from 'react-native';
+
+//default image source
 import defaultImageSource from "../../../public/static/images/defaultProduct.jpg"
 
 export default function SmallListView({ data }) {
+  //image source state for changing image source in case of error
   const [imageSource, setImageSource] = useState({ uri: data.imageUrl });
 
+  //handeling error while loading image
   const handleImageError = () => {
+    //changing source of image
     setImageSource(defaultImageSource);
   };
   
@@ -29,6 +39,7 @@ export default function SmallListView({ data }) {
   );
 }
 
+//styles
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
