@@ -81,6 +81,14 @@ npm cache clean --force
 cd android && ./gradlew clean
 ```
 
+## Bulding apk for testing on any device without connecting with developement enviorment.
+- Run following commands
+    ```bash
+  cd android
+  ./gradlew assembleRelease
+  ```
+- You can find you apk file **\android\app\build\outputs\apk\release\app-release.apk**
+  
 ## Additional Tools and Dependencies
 - AsyncStorage for local storage capability.You can read docs of async storage [here](https://reactnative.dev/docs/asyncstorage).
 - @react-navigation/bottom-tabs for bottom stack in react native. [docs](https://reactnavigation.org/docs/bottom-tab-navigator/).
