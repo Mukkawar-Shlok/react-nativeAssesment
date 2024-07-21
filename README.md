@@ -66,7 +66,21 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
   4.2 Benefits and Trade-offs
    - Efficiency: Allows for different implementations and optimizations for each list view.
    - DRY Principle Considerations: While separation improves maintainability, it might introduce code duplication.
-  
+
+## Troubleshooting
+1. Clear Metro Bundler cache
+```bash
+npx react-native start --reset-cache
+```
+2. Clear npm  cache
+```bash
+npm cache clean --force
+```
+3.Clear Android cache
+```bash
+cd android && ./gradlew clean
+```
+
 ## Additional Tools and Dependencies
 - AsyncStorage for local storage capability.You can read docs of async storage [here](https://reactnative.dev/docs/asyncstorage).
 - @react-navigation/bottom-tabs for bottom stack in react native. [docs](https://reactnavigation.org/docs/bottom-tab-navigator/).
